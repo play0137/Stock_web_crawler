@@ -2,7 +2,21 @@
 Crawl the information from Goodinfo! stock website, and filter the data according to different arguments  
 The arguments are adjustable, including debt_ratio, stakeholding, pledge_ratio, gross_margin, operating_margin, net_profit_margin and dividend_yield  
 
-# Files
+# How to run
+1. Execute stock_web_crawler.py to crawl the information from Goodinfo!,and the the output files are 月營收創新高.xlsx and stock_crawler.xlsx  
+月營收創新高.xlsx: stock highest sale in different months  
+2. Execute stock_filter_df.py to filter the data, and the output file is stock_filter.xlsx  
+You can change the arguments mentioned above  
+The default settings are:  
+DEBT_RATIO < 40%  
+STAKEHOLDING > 30%  
+PLEDGE_RATIO < 10%  
+GROSS_MARGIN = 1  
+OPERATING_MARGIN = 1  
+NET_PROFIT_MARGIN = 1  
+DIVIDEND_YIELD > 1%  
+3. Execute stock_info.py to get the basic information of companies  
+The input can be a single stock symbol or name, or stock symbols or names, e.g., 2330, 聯電
+
+# Companies
 公司股市代號對照表.csv contains the companies listed in Taiwan, the ones not in this file won't be processed  
-stock_crawler.xlsx stores the data crawled from Goodinfo!  
-stock_filter.xlsx stores the result after filtering
