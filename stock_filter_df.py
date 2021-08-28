@@ -75,7 +75,7 @@ def main():
     stock_ID = list()
     stock_name = list()
     with open(file_path, 'r', encoding="UTF-8") as file_r:
-        file_r.readline()
+        file_r.readline() # skip the first row
         for line in file_r:
             line = line.split(",")
             stock_ID.append(line[0])
@@ -126,12 +126,18 @@ def stock_info(stocks_ID, writer):
     global_vars.initialize_proxy()
     stocks_ID = stocks_ID.split(",")
     stock_dict = stock_ID_mapping()
-    headers = ["月別", "開盤", "收盤", "最高", "最低", "漲跌(元)", "漲跌(%)", "單月營收(億)", "單月月增(%)", "單月年增(%)", "累計營收(億)", "累計年增(%)", "合併單月營收(億)", "合併單月月增(%)", "合併單月年增(%)", "合併累計營收(億)", "合併累計年增(%)"]
+    # headers = ["月別", "開盤", "收盤", "最高", "最低", "漲跌(元)", "漲跌(%)", "單月營收(億)", "單月月增(%)", "單月年增(%)", "累計營收(億)", "累計年增(%)", "合併單月營收(億)", "合併單月月增(%)", "合併單月年增(%)", "合併累計營收(億)", "合併累計年增(%)"]
     table_ID = "#divDetail"
     for stock_ID in stocks_ID:
         url = f"https://goodinfo.tw/StockInfo/ShowSaleMonChart.asp?STOCK_ID={stock_ID}"
         df = stock_crawler(url, None, table_ID)
+       
+        # reassign headers
+        headers = list()
+        for i in range(len(df.columns)):
+            headers.append('_'.join(pd.Series(df.columns[i]).drop_duplicates().tolist()))
         df.columns = headers
+        
         delete_header(df, headers)
         sheet_name = f"{stock_dict[stock_ID]}"
         df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2)) # write to different sheets
