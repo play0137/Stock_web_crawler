@@ -15,6 +15,7 @@ https://goodinfo.tw/StockInfo/StockBzPerformance.asp?STOCK_ID=2330&YEAR_PERIOD=9
 """
 
 # standard libraries
+import os
 import sys
 import pdb
 import time
@@ -31,6 +32,7 @@ from selenium.common.exceptions import NoSuchElementException
 from msedge.selenium_tools import Edge, EdgeOptions
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
+from openpyxl import Workbook
 
 import global_vars
 
@@ -50,18 +52,23 @@ def main():
     table_ID = "#divStockList"
     df = stock_crawler(url, None, table_ID)
     delete_header(df, list(df.columns))
-    convert_dtype(df) # covert numeric values in string to float or int
+    convert_dtype(df) # convert numeric values in string to float
     
-    writer = pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl")
     sheet_name = f"{datetime.now().month-1}月" # write to different months
+    # create an excel file if not exist
+    if not os.path.isfile(stock_highest_salemon_file):
+        wb = Workbook()
+        wb.worksheets[0].title = sheet_name
+        wb.save(stock_highest_salemon_file)
+    writer = pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl")
     existing_sheet_names = writer.book.sheetnames
-    if sheet_name in existing_sheet_names:     # remove sheet if it has been existed in excel file
+    if sheet_name in existing_sheet_names:     # remove the sheet if it has been existed in excel file
         writer.book.remove(writer.book[sheet_name])
     df = df[df["營收月份"] == f"{datetime.now().year%100}M{datetime.now().month-1:02d}"] # only save month-1 data
     df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
     excel_formatting(writer, df, sheet_name)
     writer.save()
-    # sys.exit(0)
+    sys.exit(0)
     
     """ drop down menu """
     stock_crawler_file = global_vars.DIR_PATH + "stock_crawler.xlsx"
@@ -100,7 +107,7 @@ def delete_header(df, header):
     skip_rows = df[df[df.columns[0]]==first_header].index
     df.drop(skip_rows, inplace=True)
 
-# convert data type of dataframe to the right one
+# convert numeric values in string dtype of dataframe to float
 def convert_dtype(df):
     for name in df.columns:
         if not np.isnan(pd.to_numeric(df[name], errors='coerce')).any(): # coerce:invalid parsing will be set as NaN
@@ -169,7 +176,6 @@ def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
 # excel format setting
 def excel_formatting(writer, df, sheet_name):
     worksheet = writer.sheets[sheet_name]
-    set_column_width(worksheet, df, writer.engine)
 
     # align to center
     if writer.engine == "openpyxl":
@@ -182,6 +188,7 @@ def excel_formatting(writer, df, sheet_name):
         cell_format.set_align('vcenter')
         for col, col_name in enumerate(df.columns):
             worksheet.set_column(col, col, None, cell_format)
+    set_column_width(worksheet, df, writer.engine)
         
 # set column width to the max length of column cells
 def set_column_width(worksheet, df, engine):
