@@ -14,13 +14,14 @@ GoodInfo -> 每月營收 -> 輸入某個 股票代號/名稱 -> 經營績效 -> 
 https://goodinfo.tw/StockInfo/StockBzPerformance.asp?STOCK_ID=2330&YEAR_PERIOD=9999&RPT_CAT=M_QUAR
 """
 
-#  standard libraries
+# standard libraries
+import sys
 import pdb
 import time
 import requests
 from datetime import datetime
 
-#  third-party libraries
+# third-party libraries
 import pandas as pd
 import numpy as np
 from fake_useragent import UserAgent
@@ -34,7 +35,7 @@ from openpyxl.styles import Alignment
 import global_vars
 
 def main():
-    global_vars.init()
+    global_vars.initialize_proxy()
     
     # webdriver
     options = EdgeOptions()
@@ -48,8 +49,8 @@ def main():
     url = "https://goodinfo.tw/StockInfo/StockList.asp?RPT_TIME=&MARKET_CAT=%E6%99%BA%E6%85%A7%E9%81%B8%E8%82%A1&INDUSTRY_CAT=%E5%96%AE%E6%9C%88%E7%87%9F%E6%94%B6%E5%89%B5%E6%AD%B7%E5%8F%B2%E6%96%B0%E9%AB%98%40%40%E6%9C%88%E7%87%9F%E6%94%B6%E5%89%B5%E6%8E%92%E5%90%8D%E7%B4%80%E9%8C%84%40%40%E5%96%AE%E6%9C%88%E7%87%9F%E6%94%B6%E5%89%B5%E6%AD%B7%E5%8F%B2%E6%96%B0%E9%AB%98"
     table_ID = "#divStockList"
     df = stock_crawler(url, None, table_ID)
-    df = delete_header(df, list(df.columns))
-    df = conver_dtype(df) # covert numeric values in string to float or int
+    delete_header(df, list(df.columns))
+    convert_dtype(df) # covert numeric values in string to float or int
     
     writer = pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl")
     sheet_name = f"{datetime.now().month-1}月" # write to different months
@@ -57,9 +58,8 @@ def main():
     if sheet_name in existing_sheet_names:     # remove sheet if it has been existed in excel file
         writer.book.remove(writer.book[sheet_name])
     df = df[df["營收月份"] == f"{datetime.now().year%100}M{datetime.now().month-1:02d}"] # only save month-1 data
-    df.to_excel(writer, index=False, encoding="BIG5", sheet_name=sheet_name, freeze_panes=(1,2))
-    excel_formatting_openpyxl(writer, df, sheet_name)
-    
+    df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
+    excel_formatting(writer, df, sheet_name)
     writer.save()
     # sys.exit(0)
     
@@ -86,26 +86,25 @@ def main():
             df = stock_crawler_dropdown(driver, dropdown_ID, table_ID)
         except NoSuchElementException:
             df = stock_crawler(None, driver.page_source, table_ID)
-        df = delete_header(df, list(df.columns))
+        delete_header(df, list(df.columns))
         # df.drop_diplicates(inplace=True)
-        df.to_excel(writer, index=False, encoding="BIG5", sheet_name=sheet_name_list[i], freeze_panes=(1,2))
-        excel_formatting_xlsxwriter(writer, df, sheet_name_list[i])
+        df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name_list[i], freeze_panes=(1,2))
+        excel_formatting(writer, df, sheet_name_list[i])
     writer.save()
     
-
+    
+# delete duplicate header in data
 def delete_header(df, header):
     first_header = header[0]
     # skip all the indexes which are the same as the first header
     skip_rows = df[df[df.columns[0]]==first_header].index
-    # skip_rows = np.where(df[df.columns[0]].values==first_header)[0].tolist() # 另一種寫法
     df.drop(skip_rows, inplace=True)
-    return df
 
-def conver_dtype(df):
+# convert data type of dataframe to the right one
+def convert_dtype(df):
     for name in df.columns:
         if not np.isnan(pd.to_numeric(df[name], errors='coerce')).any(): # coerce:invalid parsing will be set as NaN
             df[name] = df[name].astype(float)
-    return df
 
 def stock_crawler(url, page_source, table_ID):
     while True:
@@ -123,16 +122,15 @@ def stock_crawler(url, page_source, table_ID):
             if response.status_code == requests.codes.ok: # status_code:200
                 print("Request successful!")
             else:
-                print("Request failed!")
-                print("Status code:", response.status_code)
-                print("Site:", url)
+                sys.stderr.write("Request failed!")
+                sys.stderr.write("Status code:" + str(response.status_code))
+                sys.stderr.write("Site:" + url)
             # crawl the website
             soup = BeautifulSoup(response.content, "lxml")
         if "異常" in soup.text or "請勿透過網站內容下載" in soup.text:
-            # pdb.set_trace()
-            print("異常")
+            sys.stderr.write("異常下載")
             global_vars.update_proxy()
-            time.sleep(2)
+            time.sleep(3) # sleep n seconds
             continue
         break
     
@@ -141,8 +139,9 @@ def stock_crawler(url, page_source, table_ID):
         div = soup.select_one(table_ID)
         df = pd.read_html(str(div))[0]
     except:
+        sys.stderr.write("empty div")
         pdb.set_trace()
-    
+        
     return df
 
 def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
@@ -166,41 +165,37 @@ def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
             
     return df_concat
 
+
 # excel format setting
-def excel_formatting_openpyxl(writer, df, current_sheet):
-    worksheet = writer.sheets[current_sheet]
-    # set column width to the max length of column cells
+def excel_formatting(writer, df, sheet_name):
+    worksheet = writer.sheets[sheet_name]
+    set_column_width(worksheet, df, writer.engine)
+
+    # align to center
+    if writer.engine == "openpyxl":
+        for row_cells in worksheet.iter_rows():
+            for cell in row_cells:
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+    elif writer.engine == "xlsxwriter":
+        cell_format = writer.book.add_format()
+        cell_format.set_align('center')
+        cell_format.set_align('vcenter')
+        for col, col_name in enumerate(df.columns):
+            worksheet.set_column(col, col, None, cell_format)
+        
+# set column width to the max length of column cells
+def set_column_width(worksheet, df, engine):
     for col, col_name in enumerate(df.columns):
         df_list = list(df[col_name].astype(str))
         max_col_len = -1
-        for element in df_list:
-            if len_byte(element) > max_col_len:
-                max_col_len = len_byte(element)
-                # print(element, max_col_len)
+        for cell in df_list:
+            if len_byte(cell) > max_col_len:
+                max_col_len = len_byte(cell)
         max_col_len = int(max(max_col_len, len_byte(col_name)))
-        worksheet.column_dimensions[get_column_letter(col+1)].width = max_col_len
-    
-    # align to center
-    for row_cells in worksheet.iter_rows():
-        for cell in row_cells:
-            cell.alignment = Alignment(horizontal='center', vertical='center')
-
-def excel_formatting_xlsxwriter(writer, df, current_sheet):
-    workbook = writer.book
-    new_format = workbook.add_format()
-    new_format.set_align('center')
-
-    worksheet = writer.sheets[current_sheet]
-    for i, col in enumerate(df.columns):
-        df_list = list(df[col].astype(str))
-        max_col_len = -1
-        for element in df_list:
-            if len_byte(element) > max_col_len:
-                max_col_len = len_byte(element)
-                # print(element, max_col_len)
-        max_col_len = max(max_col_len, len_byte(col))
-        # print(col, max_col_len)
-        worksheet.set_column(i, i, max_col_len, new_format)
+        if engine == "openpyxl":
+            worksheet.column_dimensions[get_column_letter(col+1)].width = max_col_len # arg in column_dimensions is letter('A->1, 'B'->2, 'C'->3, etc.)
+        elif engine == "xlsxwriter":
+            worksheet.set_column(col, col, max_col_len)
 
 # get character length
 def len_byte(value):

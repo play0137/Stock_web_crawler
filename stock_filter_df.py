@@ -59,7 +59,7 @@ import time
 import pandas as pd
 
 import global_vars
-from stock_web_crawler import stock_crawler, delete_header, excel_formatting_xlsxwriter
+from stock_web_crawler import stock_crawler, delete_header, excel_formatting
 
 # global variables
 DEBT_RATIO = 40         # 負債比
@@ -100,7 +100,7 @@ def main():
 
     writer = pd.ExcelWriter(global_vars.DIR_PATH + "stock_filter.xlsx", engine="xlsxwriter")
     df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="All", freeze_panes=(1,2))
-    excel_formatting_xlsxwriter(writer, df_combine, "All")
+    excel_formatting(writer, df_combine, "All")
     
     input_menu() # user menu
     # filters
@@ -110,22 +110,20 @@ def main():
     df_combine = df_combine[df_combine["全體董監質押(%)"] < PLEDGE_RATIO]
     df_combine = df_combine[df_combine["現金殖利率"] > DIVIDEND_YIELD]
     df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="Filtered", freeze_panes=(1,2))
-    excel_formatting_xlsxwriter(writer, df_combine, "Filtered")
+    excel_formatting(writer, df_combine, "Filtered")
     
     # pdb.set_trace()
     # infos of filtered stocks in different sheets
-    stocks_ID = ','.join(df_combine["代號"].values)
-    stocks_info(stocks_ID, writer)
-    
-    
+    # stocks_ID = ','.join(df_combine["代號"].values)
+    # stock_info(stocks_ID, writer)
     
     writer.save()
 
 
-def stocks_info(stocks_ID, writer):
+def stock_info(stocks_ID, writer):
     stocks_ID = "2330,1305" # 實驗暫時用的
     
-    global_vars.init()
+    global_vars.initialize_proxy()
     stocks_ID = stocks_ID.split(",")
     stock_dict = stock_ID_mapping()
     headers = ["月別", "開盤", "收盤", "最高", "最低", "漲跌(元)", "漲跌(%)", "單月營收(億)", "單月月增(%)", "單月年增(%)", "累計營收(億)", "累計年增(%)", "合併單月營收(億)", "合併單月月增(%)", "合併單月年增(%)", "合併累計營收(億)", "合併累計年增(%)"]
@@ -134,10 +132,10 @@ def stocks_info(stocks_ID, writer):
         url = f"https://goodinfo.tw/StockInfo/ShowSaleMonChart.asp?STOCK_ID={stock_ID}"
         df = stock_crawler(url, None, table_ID)
         df.columns = headers
-        df = delete_header(df, headers)
+        delete_header(df, headers)
         sheet_name = f"{stock_dict[stock_ID]}"
         df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2)) # write to different sheets
-        excel_formatting_xlsxwriter(writer, df, sheet_name)
+        excel_formatting(writer, df, sheet_name)
         time.sleep(1)
 
 # 1101,台泥,台灣水泥股份有限公司

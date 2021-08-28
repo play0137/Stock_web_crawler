@@ -4,11 +4,11 @@ import pdb
 
 import pandas as pd
 
-from stock_web_crawler import stock_crawler, delete_header, excel_formatting_xlsxwriter
+from stock_web_crawler import stock_crawler, delete_header, excel_formatting
 import global_vars
 
 def main():
-    global_vars.init()
+    global_vars.initialize_proxy()
     
     """ 個股資訊 """
     # inputs = "台積電 聯電"
@@ -41,10 +41,10 @@ def main():
         url = f"https://goodinfo.tw/StockInfo/ShowSaleMonChart.asp?STOCK_ID={stock_ID}"
         df = stock_crawler(url, None, table_ID)
         df.columns = headers
-        df = delete_header(df, headers)
+        delete_header(df, headers)
         sheet_name = f"{stock_dict[stock_ID]}"
         df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2)) # write to different sheets
-        excel_formatting_xlsxwriter(writer, df, sheet_name)
+        excel_formatting(writer, df, sheet_name)
     writer.save()
 
 
