@@ -55,8 +55,7 @@ def main():
     convert_dtype(df) # convert numeric values in string to float
     
     sheet_name = f"{datetime.now().month-1}月" # write to different months
-    # create an excel file if not exist
-    if not os.path.isfile(stock_highest_salemon_file):
+    if not os.path.isfile(stock_highest_salemon_file): # create an excel file if not exist
         wb = Workbook()
         wb.worksheets[0].title = sheet_name
         wb.save(stock_highest_salemon_file)
@@ -68,7 +67,7 @@ def main():
     df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
     excel_formatting(writer, df, sheet_name)
     writer.save()
-    sys.exit(0)
+    # sys.exit(0)
     
     """ drop down menu """
     stock_crawler_file = global_vars.DIR_PATH + "stock_crawler.xlsx"
@@ -100,6 +99,9 @@ def main():
     writer.save()
     
     
+    
+    
+    
 # delete duplicate header in data
 def delete_header(df, header):
     first_header = header[0]
@@ -125,7 +127,7 @@ def stock_crawler(url, page_source, table_ID):
             # header = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"}
         
             # request
-            response = requests.post(url, headers = header, proxies = global_vars.proxy)
+            response = requests.post(url, headers=header, proxies=global_vars.proxy)
             if response.status_code == requests.codes.ok: # status_code:200
                 print("Request successful!")
             else:
@@ -172,7 +174,6 @@ def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
             
     return df_concat
 
-
 # excel format setting
 def excel_formatting(writer, df, sheet_name):
     worksheet = writer.sheets[sheet_name]
@@ -208,8 +209,8 @@ def set_column_width(worksheet, df, engine):
 def len_byte(value):
     length = len(value)
     utf8_length = len(value.encode('utf-8'))
-    length = (utf8_length - length) / 1.3 + length # 根據excel實際欄寬調整參數
-    return int(length)
+    length = (utf8_length - length) / 1.2 + length # 根據excel實際欄寬調整參數
+    return int(utf8_length)
 
 
 if __name__ == "__main__":
