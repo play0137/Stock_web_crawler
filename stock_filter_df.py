@@ -29,11 +29,6 @@ Conditions:
     https://goodinfo.tw/StockInfo/StockList.asp?RPT_TIME=&MARKET_CAT=%E6%99%BA%E6%85%A7%E9%81%B8%E8%82%A1&INDUSTRY_CAT=%E6%9C%88K%E7%B7%9A%E7%AA%81%E7%A0%B4%E5%AD%A3%E7%B7%9A%40%40%E6%9C%88K%E7%B7%9A%E5%90%91%E4%B8%8A%E7%AA%81%E7%A0%B4%E5%9D%87%E5%83%B9%E7%B7%9A%40%40%E5%AD%A3%E7%B7%9A
     9.股票尚未經歷大漲大跌(skip)
 """
-"""
-2.經營績效-合併報表 單季
-抓下來後讓使用者輸入第幾季
-只秀出第幾季的資料就好
-"""
 
 import pdb
 import time
@@ -103,7 +98,7 @@ def main():
 # the info of monthly revenue and consollidated financial statements
 def stock_info(stocks_ID, writer):
     # stocks_ID = "2330,1305" # 實驗暫時用的
-    stocks_ID = "2330" # 實驗暫時用的
+    # stocks_ID = "2330" # 實驗暫時用的
     
     global_vars.initialize_proxy()
     stocks_ID = stocks_ID.split(",")
