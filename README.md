@@ -8,13 +8,14 @@ The arguments are adjustable, including debt_ratio, stakeholding, pledge_ratio, 
 2. Execute stock_filter_df.py to filter the data, and the output file is stock_filter.xlsx  
 You can change the arguments mentioned above  
 The default settings are:  
-DEBT_RATIO < 40%  
-STAKEHOLDING > 30%  
-PLEDGE_RATIO < 10%  
-GROSS_MARGIN = 1  
-OPERATING_MARGIN = 1  
-NET_PROFIT_MARGIN = 1  
-DIVIDEND_YIELD > 1%  
+DEBT_RATIO < 40%       # 負債比
+STAKEHOLDING > 30%     # 持股
+PLEDGE_RATIO < 10%     # 質押比
+GROSS_MARGIN = 1       # 毛利率
+OPERATING_MARGIN = 1   # 營益率
+NET_PROFIT_MARGIN = 1  # 稅後淨利率
+DIVIDEND_YIELD > 1%    # 現金殖利率
+
 3. Execute stock_info.py to get the basic information of companies  
 The input can be a single stock symbol or name, or stock symbols or names, e.g., 2330, 聯電
 
