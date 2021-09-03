@@ -30,36 +30,18 @@ Conditions:
     9.股票尚未經歷大漲大跌(skip)
 """
 """
--利率
--把資訊附在篩選後的後面欄位
--不當成篩選條件了
-
--均線
--月季年三欄 放在篩選後股票的後面欄位
-
-篩選後的股票每個一個分頁(in stock_filter檔案裡)
-分頁裡放
-1.個股月營收
 2.經營績效-合併報表 單季
 抓下來後讓使用者輸入第幾季
 只秀出第幾季的資料就好
-個股月營收放上面row
-經營績效放下面row
-
--個股月營收程式從stock_web_crawler.py拉出到新的程式寫
--月營收創新高的月份 抓 營收月份 那一欄 判斷是否為month-1
--Mode改成append, engine改成openpyxl
--excel_formatting(openpyxl and xlsxwriter versions)
--freeze the first row and the first, second columns
 """
 
 import pdb
 import time
-
 import pandas as pd
 
 import global_vars
 from stock_web_crawler import stock_crawler, delete_header, excel_formatting
+from stock_info import stock_ID_name_mapping
 
 # global variables
 DEBT_RATIO = 40         # 負債比
@@ -112,53 +94,45 @@ def main():
     df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="Filtered", freeze_panes=(1,2))
     excel_formatting(writer, df_combine, "Filtered")
     
-    # pdb.set_trace()
-    # infos of filtered stocks in different sheets
-    # stocks_ID = ','.join(df_combine["代號"].values)
-    # stock_info(stocks_ID, writer)
-    
+    # info of filtered stocks in different sheets
+    stocks_ID = ','.join(df_combine["代號"].values)
+    stock_info(stocks_ID, writer)
     writer.save()
 
 
+# the info of monthly revenue and consollidated financial statements
 def stock_info(stocks_ID, writer):
-    stocks_ID = "2330,1305" # 實驗暫時用的
+    # stocks_ID = "2330,1305" # 實驗暫時用的
+    stocks_ID = "2330" # 實驗暫時用的
     
     global_vars.initialize_proxy()
     stocks_ID = stocks_ID.split(",")
-    stock_dict = stock_ID_mapping()
-    # headers = ["月別", "開盤", "收盤", "最高", "最低", "漲跌(元)", "漲跌(%)", "單月營收(億)", "單月月增(%)", "單月年增(%)", "累計營收(億)", "累計年增(%)", "合併單月營收(億)", "合併單月月增(%)", "合併單月年增(%)", "合併累計營收(億)", "合併累計年增(%)"]
+    stock_dict = stock_ID_name_mapping()
+    
     table_ID = "#divDetail"
     for stock_ID in stocks_ID:
-        url = f"https://goodinfo.tw/StockInfo/ShowSaleMonChart.asp?STOCK_ID={stock_ID}"
-        df = stock_crawler(url, None, table_ID)
-       
-        # reassign headers
-        headers = list()
-        for i in range(len(df.columns)):
-            headers.append('_'.join(pd.Series(df.columns[i]).drop_duplicates().tolist()))
-        df.columns = headers
+        monthly_revenue_url = f"https://goodinfo.tw/StockInfo/ShowSaleMonChart.asp?STOCK_ID={stock_ID}"
+        CFS_url = f"https://goodinfo.tw/StockInfo/StockBzPerformance.asp?STOCK_ID={stock_ID}&YEAR_PERIOD=9999&RPT_CAT=M_QUAR"
+        url_list = [monthly_revenue_url, CFS_url]
         
-        delete_header(df, headers)
+        df_list = list()
+        for url in url_list:
+            df = stock_crawler(url, None, table_ID)
+            # reassign headers
+            headers = list()
+            for i in range(len(df.columns)):
+                headers.append('_'.join(pd.Series(df.columns[i]).drop_duplicates().tolist()))
+            df.columns = headers
+            delete_header(df, headers)
+            df_list.append(df)
+        
         sheet_name = f"{stock_dict[stock_ID]}"
-        df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2)) # write to different sheets
-        excel_formatting(writer, df, sheet_name)
+        df_list[0].to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,1)) # write to different sheets
+        df_list[1].to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, startrow=df_list[0].shape[0]+2) # write to different sheets
+        excel_formatting(writer, df_list[1], sheet_name)
+        excel_formatting(writer, df_list[0], sheet_name)
         time.sleep(1)
-
-# 1101,台泥,台灣水泥股份有限公司
-def stock_ID_mapping():
-    stock_dict = dict()
-    with open(global_vars.DIR_PATH + "公司股市代號對照表.csv", "r", encoding="UTF-8") as file_r:
-        file_r.readline()
-        for line in file_r:
-            line = line.split(",")
-            stock_ID = line[0]
-            stock_name = line[1]
-            if stock_ID not in stock_dict:
-                stock_dict[stock_ID] = stock_name
-            if stock_name not in stock_dict:
-                stock_dict[stock_name] = stock_ID
-    return stock_dict
-
+        
 def input_menu():
     global DEBT_RATIO, STAKEHOLDING, PLEDGE_RATIO, GROSS_MARGIN, OPERATING_MARGIN, NET_PROFIT_MARGIN, DIVIDEND_YIELD
 
