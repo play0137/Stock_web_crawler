@@ -1,7 +1,7 @@
+""" 個股月營收資訊 """
 import re
 import sys
 import pdb
-
 import pandas as pd
 
 from stock_web_crawler import stock_crawler, delete_header, excel_formatting
@@ -10,22 +10,22 @@ import global_vars
 def main():
     global_vars.initialize_proxy()
     
-    """ 個股資訊 """
+    """ valid input formats """
     # inputs = "台積電 聯電"
-    inputs = "2330 2314"
-    # inputs = "2330"
+    # inputs = "2330 2314"
+    # inputs = "台積電, 2314"
     
-    # inputs = input("輸入要搜尋的公司名稱或股號:\n(press q to exit)")
+    inputs = input("輸入要搜尋的公司名稱或股號:\n(press q to exit)\n")
     if inputs == "q":
         sys.exit(0)
     
     stocks_ID = list()
-    stock_dict = stock_ID_mapping()
+    stock_dict = stock_ID_name_mapping()
     delims = r"[\s\t,\.;]+"
     inputs = re.split(delims, inputs)
     for stock in inputs:
         if stock not in stock_dict:
-            print("Invalid input!!", stock, "is not in the stock ticker symbol table")
+            print("Invalid input!", stock, "is not in the stock ticker symbol table")
             sys.exit(-1)
         if stock.isdigit():
             stocks_ID.append(stock)
@@ -55,7 +55,7 @@ def main():
 
 
 # 1101,台泥,台灣水泥股份有限公司
-def stock_ID_mapping():
+def stock_ID_name_mapping():
     stock_dict = dict()
     with open(global_vars.DIR_PATH + "公司股市代號對照表.csv", "r", encoding="UTF-8") as file_r:
         file_r.readline()
