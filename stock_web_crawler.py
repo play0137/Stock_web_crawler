@@ -99,9 +99,6 @@ def main():
     writer.save()
     
     
-    
-    
-    
 # delete duplicate header in data
 def delete_header(df, header):
     first_header = header[0]
