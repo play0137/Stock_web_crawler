@@ -7,7 +7,7 @@ The arguments are adjustable, including debt_ratio, stakeholding, pledge_ratio, 
 月營收創新高.xlsx: stock highest revenue in different months  
 2. Execute stock_filter_df.py to filter the data, and the output file is stock_filter.xlsx  
 The first and the second sheets (sheet names:All and Filtered) of stock_filter.xlsx shows the infotmation of unfiltered and filtered sotcks
-The rest of the sheets show the basic information of stotcks
+The rest of the sheets show the basic information of each filtered stock, including monthly revenue and consolidated financial statements
 You can change the arguments mentioned above  
 The default settings are:  
 DEBT_RATIO < 40%       # 負債比  
