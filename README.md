@@ -6,8 +6,8 @@
 1. 執行 stock_web_crawler.py 來爬取Goodinfo!的資料，輸出檔案為 月營收創新高.xlsx 和 stock_crawler.xlsx  
 月營收創新高.xlsx: 抓取上一個月月營收創新高股票的相關資訊  
 2. 執行 stock_filter_df.py 來過濾股票，輸出檔案為 stock_filter.xlsx  
-stock_filter.xlsx 的第一及第二個分頁(分頁名字:ALL及Filtered)顯示所有及過濾後的股票，每個欄位皆為用來做篩選的參數  
-參數是可調整的  
+stock_filter.xlsx 的第一及第二個分頁(分頁名字:ALL及Filtered)顯示所有及過濾後的股票  
+每個欄位皆為用來做篩選的參數，參數是可調整的  
 基本參數設定  
 DEBT_RATIO < 40%       # 負債比  
 STAKEHOLDING > 30%     # 持股  
