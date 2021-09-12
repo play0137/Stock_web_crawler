@@ -2,7 +2,7 @@
 Crawl the information from Goodinfo! stock website, and filter the data according to different arguments  
 The arguments are adjustable, including debt_ratio, stakeholding, pledge_ratio and dividend_yield  
 
-# How to run
+# Usage
 1. Execute stock_web_crawler.py to crawl the information from Goodinfo!, and the the output files are 月營收創新高.xlsx and stock_crawler.xlsx  
 月營收創新高.xlsx: stock highest revenue in different months  
 2. Execute stock_filter_df.py to filter the data, and the output file is stock_filter.xlsx  
