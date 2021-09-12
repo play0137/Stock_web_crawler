@@ -29,14 +29,17 @@ Conditions:
     https://goodinfo.tw/StockInfo/StockList.asp?RPT_TIME=&MARKET_CAT=%E6%99%BA%E6%85%A7%E9%81%B8%E8%82%A1&INDUSTRY_CAT=%E6%9C%88K%E7%B7%9A%E7%AA%81%E7%A0%B4%E5%AD%A3%E7%B7%9A%40%40%E6%9C%88K%E7%B7%9A%E5%90%91%E4%B8%8A%E7%AA%81%E7%A0%B4%E5%9D%87%E5%83%B9%E7%B7%9A%40%40%E5%AD%A3%E7%B7%9A
     9.股票尚未經歷大漲大跌(skip)
 """
-
+import sys
 import pdb
 import time
 import pandas as pd
+import random
+from datetime import datetime
 
 import global_vars
 from stock_web_crawler import stock_crawler, delete_header, excel_formatting
 from stock_info import stock_ID_name_mapping
+
 
 # global variables
 DEBT_RATIO = 40         # 負債比
@@ -60,7 +63,12 @@ def main():
     df_combine = pd.DataFrame(list(zip(stock_ID, stock_name)), columns=["代號", "名稱"])
     
     file_path = global_vars.DIR_PATH + "月營收創新高.xlsx"
-    df = pd.read_excel(file_path)
+    try:
+        df = pd.read_excel(file_path, sheet_name=f"{datetime.now().month-1}月")
+    except ValueError as ve:
+        print("ValueError:", ve)
+        sys.stderr.write("Please excute stock_web_crawler.py first.\n")
+        sys.exit(0)
     df["代號"] = df["代號"].astype(str)
     df = df[["代號", "單月營收歷月排名"]]
     df_combine = pd.merge(df_combine, df, on=["代號"], how="left")
@@ -91,13 +99,19 @@ def main():
     
     # info of filtered stocks in different sheets
     stocks_ID = ','.join(df_combine["代號"].values)
+    stock_dict = stock_ID_name_mapping()
+    for stock_ID in stocks_ID.split(','):
+        print("filtered stocks:")
+        print(f"{stock_dict[stock_ID]}({stock_ID})")
+    print("The size of filtered  stocks:", len(stocks_ID.split(',')))
     stock_info(stocks_ID, writer)
     writer.save()
 
 
 # the info of monthly revenue and consollidated financial statements
 def stock_info(stocks_ID, writer):
-    # stocks_ID = "2330,1305" # 實驗暫時用的
+    global_vars.initialize_proxy()
+    # stocks_ID = "1210,1215,1240,1256,1303,1305,1308,1342,1541,1593,1773,1802,2002,2059,2062,2063,2069,2221,2241" # 實驗暫時用的
     # stocks_ID = "2330" # 實驗暫時用的
     
     global_vars.initialize_proxy()
@@ -120,13 +134,14 @@ def stock_info(stocks_ID, writer):
             df.columns = headers
             delete_header(df, headers)
             df_list.append(df)
+            time.sleep(random.randint(3,9))
         
         sheet_name = f"{stock_dict[stock_ID]}"
         df_list[0].to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,1)) # write to different sheets
         df_list[1].to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, startrow=df_list[0].shape[0]+2) # write to different sheets
         excel_formatting(writer, df_list[1], sheet_name)
         excel_formatting(writer, df_list[0], sheet_name)
-        time.sleep(1)
+        time.sleep(random.randint(5,12))
         
 def input_menu():
     global DEBT_RATIO, STAKEHOLDING, PLEDGE_RATIO, GROSS_MARGIN, OPERATING_MARGIN, NET_PROFIT_MARGIN, DIVIDEND_YIELD
