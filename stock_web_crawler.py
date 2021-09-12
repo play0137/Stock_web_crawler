@@ -19,6 +19,7 @@ import os
 import sys
 import pdb
 import time
+import random
 import requests
 from datetime import datetime
 
@@ -42,9 +43,12 @@ def main():
     # webdriver
     options = EdgeOptions()
     options.use_chromium = True
-    options.add_argument("disable-notifications") # disable notifications
+    options.add_argument (f"--user-agent={UserAgent().random}")
+    options.add_argument("--incognito")           # incognito mode  
     options.add_argument("headless")              # executing selenium without running the browser
+    options.add_argument("disable-notifications") # disable notifications
     driver = Edge(global_vars.DIR_PATH + "edgedriver_win64/msedgedriver.exe", options=options)
+    driver.implicitly_wait(random.randint(1,4))
     
     """ 月營收創新高 """
     stock_highest_salemon_file = global_vars.DIR_PATH + "月營收創新高.xlsx"
@@ -59,10 +63,7 @@ def main():
         wb = Workbook()
         wb.worksheets[0].title = sheet_name
         wb.save(stock_highest_salemon_file)
-    writer = pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl")
-    existing_sheet_names = writer.book.sheetnames
-    if sheet_name in existing_sheet_names:     # remove the sheet if it has been existed in excel file
-        writer.book.remove(writer.book[sheet_name])
+    writer = pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl", if_sheet_exists='replace')
     df = df[df["營收月份"] == f"{datetime.now().year%100}M{datetime.now().month-1:02d}"] # only save month-1 data
     df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
     excel_formatting(writer, df, sheet_name)
@@ -115,7 +116,6 @@ def convert_dtype(df):
 def stock_crawler(url, page_source, table_ID):
     while True:
         if page_source:
-            # use this if the page source is updated
             soup = BeautifulSoup(page_source, "lxml")
         else:
             # fake user agent
@@ -125,19 +125,18 @@ def stock_crawler(url, page_source, table_ID):
         
             # request
             response = requests.post(url, headers=header, proxies=global_vars.proxy)
-            if response.status_code == requests.codes.ok: # status_code:200
-                print("Request successful!")
-            else:
-                sys.stderr.write("Request failed!")
-                sys.stderr.write("Status code:" + str(response.status_code))
-                sys.stderr.write("Site:" + url)
+            if response.status_code != requests.codes.ok: # status_code:200
+                sys.stderr.write("Request failed!\n")
+                sys.stderr.write("Status code:" + str(response.status_code) + '\n')
+                sys.stderr.write("Site:" + url + '\n')
             # crawl the website
             soup = BeautifulSoup(response.content, "lxml")
         if "異常" in soup.text or "請勿透過網站內容下載" in soup.text:
-            sys.stderr.write("異常下載")
+            sys.stderr.write("異常下載\n")
             global_vars.update_proxy()
-            time.sleep(3) # sleep n seconds
+            time.sleep(random.randint(60,120)) # sleep n seconds
             continue
+        print("Request successful!")
         break
     
     soup.encoding = "UTF-8"
@@ -146,7 +145,8 @@ def stock_crawler(url, page_source, table_ID):
         df = pd.read_html(str(div))[0]
     except:
         sys.stderr.write("empty div")
-        pdb.set_trace()
+        # pdb.set_trace()
+        sys.exit(-1)
         
     return df
 
@@ -158,11 +158,12 @@ def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
             select = Select(element).options[i]
             select.click()
         except:
+            # pdb.set_trace()
             # refetch if the element is no longer attached to the DOM
             element = driver.find_element_by_id(dropdown_ID) # 1~300, 301~600, 601~900, 901~1200, 1201~1500, 1500~1734
             select = Select(element).options[i]
             select.click()
-        time.sleep(2)
+        time.sleep(random.randint(2,5))
         df = stock_crawler(None, driver.page_source, table_ID)
         if i == 0:
             df_concat = df
