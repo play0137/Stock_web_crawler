@@ -111,8 +111,7 @@ def main():
 # the info of monthly revenue and consollidated financial statements
 def stock_info(stocks_ID, writer):
     global_vars.initialize_proxy()
-    # stocks_ID = "1210,1215,1240,1256,1303,1305,1308,1342,1541,1593,1773,1802,2002,2059,2062,2063,2069,2221,2241" # 實驗暫時用的
-    # stocks_ID = "2330" # 實驗暫時用的
+    # stocks_ID = "1210,1215,2069,2221,2241" # 實驗暫時用的
     
     global_vars.initialize_proxy()
     stocks_ID = stocks_ID.split(",")
@@ -182,7 +181,7 @@ def menu():
           f"4.現金殖利率(> {DIVIDEND_YIELD}%)",
           "5.預設",
           "6.目前參數值", 
-          "7.離開", sep="\n")
+          "7.繼續", sep="\n")
  
 
 if __name__ == "__main__":
