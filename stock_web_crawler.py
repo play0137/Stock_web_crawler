@@ -134,7 +134,7 @@ def stock_crawler(url, page_source, table_ID):
         if "異常" in soup.text or "請勿透過網站內容下載" in soup.text:
             sys.stderr.write("異常下載\n")
             global_vars.update_proxy()
-            time.sleep(random.randint(60,120)) # sleep n seconds
+            time.sleep(random.randint(30,60)) # sleep n seconds
             continue
         print("Request successful!")
         break
