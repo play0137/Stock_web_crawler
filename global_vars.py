@@ -3,7 +3,7 @@ import os
 import json
 import random
 
-DIR_PATH = "C:/Users/play0/OneDrive/桌面/stock/test/" # modify the directory path to the one that your files are located in
+DIR_PATH = "C:/Users/play0/OneDrive/桌面/stock/" # modify the directory path to the one that your files are located in
 def initialize_proxy():
     global proxy, proxy_list
     
