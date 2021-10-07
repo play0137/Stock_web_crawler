@@ -1,5 +1,6 @@
 """ global variables are declared here """
 import os
+import sys
 import json
 import random
 
@@ -23,8 +24,12 @@ def initialize_proxy():
 # choose a proxy from proxy_list randomly, and remove it
 def update_proxy():
     global proxy
-    proxy = random.choice(proxy_list)
-    proxy_list.remove(proxy)
+    
+    if proxy_list:
+        proxy = random.choice(proxy_list)
+        proxy_list.remove(proxy)
+    else:
+        sys.err.write("Please update proxies\n")
     
 def main():
     pass

@@ -45,10 +45,14 @@ from stock_info import stock_ID_name_mapping
 DEBT_RATIO = 40         # 負債比
 STAKEHOLDING = 30       # 持股
 PLEDGE_RATIO = 10       # 質押比
-GROSS_MARGIN = 1        # 毛利率
-OPERATING_MARGIN = 1    # 營益率
-NET_PROFIT_MARGIN = 1   # 稅後淨利率
+# DEBT_RATIO = 100         # 負債比
+# STAKEHOLDING = 0       # 持股
+# PLEDGE_RATIO = 100       # 質押比
+GROSS_MARGIN = 20        # 毛利率
+OPERATING_MARGIN = 20    # 營益率
+NET_PROFIT_MARGIN = 20   # 稅後淨利率
 DIVIDEND_YIELD = 1      # 現金殖利率
+# DIVIDEND_YIELD = 0      # 現金殖利率
 
 def main():
     file_path = global_vars.DIR_PATH + "公司股市代號對照表.csv"
@@ -76,7 +80,7 @@ def main():
     file_path = global_vars.DIR_PATH + "stock_crawler.xlsx"
     dfs = pd.read_excel(file_path, sheet_name=None) # set sheet_name=None if you want to read all sheets
     sheet_names = ["負債比", "全體董監持股_全體董監質押比", "本國法人持股", "全體董監持股_全體董監質押比", "單季營業毛利創歷季新高", "單季營業毛利創歷季新高", "單季稅後淨利創歷季新高", "殖利率", "均線", "均線", "均線"]
-    columns = ["負債總額(%)", "全體董監持股(%)", "本國法人(%)", "全體董監質押(%)", "毛利歷季排名", "營益率歷季排名", "淨利率歷季排名", "現金殖利率", "月均線", "季均線", "年均線"]
+    columns = ["負債總額(%)", "全體董監持股(%)", "本國法人(%)", "全體董監質押(%)", "毛利率歷季排名", "營益率歷季排名", "淨利率歷季排名", "現金殖利率", "月均線", "季均線", "年均線"]
     for i, sheet_name in enumerate(sheet_names):
         df = dfs[sheet_name]
         df["代號"] = df["代號"].astype(str)
@@ -90,18 +94,23 @@ def main():
     input_menu() # user menu
     # filters
     df_combine = df_combine[df_combine["單月營收歷月排名"] == "1高"]
-    df_combine = df_combine[df_combine["負債總額(%)"] < DEBT_RATIO]
-    df_combine = df_combine[(df_combine["全體董監持股(%)"]+df_combine["本國法人(%)"]) > STAKEHOLDING]
-    df_combine = df_combine[df_combine["全體董監質押(%)"] < PLEDGE_RATIO]
-    df_combine = df_combine[df_combine["現金殖利率"] > DIVIDEND_YIELD]
+    df_combine = df_combine[df_combine["負債總額(%)"] <= DEBT_RATIO]
+    df_combine = df_combine[(df_combine["全體董監持股(%)"]+df_combine["本國法人(%)"]) >= STAKEHOLDING]
+    df_combine = df_combine[df_combine["全體董監質押(%)"] <= PLEDGE_RATIO]
+    df_combine = df_combine[df_combine["毛利率歷季排名"] <= GROSS_MARGIN]
+    df_combine = df_combine[df_combine["營益率歷季排名"] <= OPERATING_MARGIN]
+    df_combine = df_combine[df_combine["淨利率歷季排名"] <= NET_PROFIT_MARGIN]
+    df_combine = df_combine[df_combine["現金殖利率"] >= DIVIDEND_YIELD]
     df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="Filtered", freeze_panes=(1,2))
     excel_formatting(writer, df_combine, "Filtered")
     
     # info of filtered stocks in different sheets
     stocks_ID = ','.join(df_combine["代號"].values)
+    if not stocks_ID:
+        sys.exit("無符合篩選條件的股票")
     stock_dict = stock_ID_name_mapping()
+    print("filtered stocks:")
     for stock_ID in stocks_ID.split(','):
-        print("filtered stocks:")
         print(f"{stock_dict[stock_ID]}({stock_ID})")
     print("The size of filtered  stocks:", len(stocks_ID.split(',')))
     stock_info(stocks_ID, writer)
@@ -141,47 +150,59 @@ def stock_info(stocks_ID, writer):
         excel_formatting(writer, df_list[1], sheet_name)
         excel_formatting(writer, df_list[0], sheet_name)
         time.sleep(random.randint(5,12))
-        
+      
 def input_menu():
     global DEBT_RATIO, STAKEHOLDING, PLEDGE_RATIO, GROSS_MARGIN, OPERATING_MARGIN, NET_PROFIT_MARGIN, DIVIDEND_YIELD
 
     menu()
     while True:
         input_num = input()
-        if input_num == "1":
+        if input_num == "0":
             DEBT_RATIO = int(input())
-        elif input_num == "2":
+        elif input_num == "1":
             STAKEHOLDING = int(input())
-        elif input_num == "3":
+        elif input_num == "2":
             PLEDGE_RATIO = int(input())
-        elif input_num == "4":
+        elif input_num == "3":
             DIVIDEND_YIELD = int(input())
+        elif input_num == "4":
+            GROSS_MARGIN = int(input())
         elif input_num == "5":
+            OPERATING_MARGIN = int(input())
+        elif input_num == "6":
+            NET_PROFIT_MARGIN = int(input())
+        elif input_num == "7":
             DEBT_RATIO = 40
             STAKEHOLDING = 30
             PLEDGE_RATIO = 10
-            GROSS_MARGIN = 1
-            OPERATING_MARGIN = 1
-            NET_PROFIT_MARGIN = 1
+            GROSS_MARGIN = 20
+            OPERATING_MARGIN = 20
+            NET_PROFIT_MARGIN = 20
             DIVIDEND_YIELD = 1
-        elif input_num == "6":
-            print(f"負債比 < {DEBT_RATIO}%\n"\
-                  f"董監+法人持股 > {STAKEHOLDING}%\n"\
-                  f"董監質押比 < {PLEDGE_RATIO}%\n"\
-                  f"現金殖利率 > {DIVIDEND_YIELD}%\n")
-        elif input_num == "7":
+        elif input_num == "8":
+            print(f"負債比 < {DEBT_RATIO}%",
+                  f"董監+法人持股 > {STAKEHOLDING}%",
+                  f"董監質押比 < {PLEDGE_RATIO}%",
+                  f"現金殖利率 > {DIVIDEND_YIELD}%",
+                  f"毛利率 前{GROSS_MARGIN}名",
+                  f"營益率 前{OPERATING_MARGIN}名",
+                  f"稅後淨利率 前{NET_PROFIT_MARGIN}名\n", sep='\n')
+        elif input_num == "9":
             break
         menu()
  
 def menu():
     print("輸入參數:",
-          f"1.負債比(< {DEBT_RATIO}%)",
-          f"2.董監+法人持股(> {STAKEHOLDING}%)",
-          f"3.董監質押比(< {PLEDGE_RATIO}%)",
-          f"4.現金殖利率(> {DIVIDEND_YIELD}%)",
-          "5.預設",
-          "6.目前參數值", 
-          "7.繼續", sep="\n")
+          f"0.負債比(< {DEBT_RATIO}%)",
+          f"1.董監+法人持股(> {STAKEHOLDING}%)",
+          f"2.董監質押比(< {PLEDGE_RATIO}%)",
+          f"3.現金殖利率(> {DIVIDEND_YIELD}%)",
+          f"4.毛利率前{GROSS_MARGIN}名",
+          f"5.營益率前{OPERATING_MARGIN}名",
+          f"6.稅後淨利率前{NET_PROFIT_MARGIN}名",
+          "7.預設",
+          "8.目前參數值", 
+          "9.繼續", sep="\n")
  
 
 if __name__ == "__main__":
