@@ -40,7 +40,7 @@ import global_vars
 def main():
     global_vars.initialize_proxy()
     
-    # webdriver
+    # webdriver settings
     options = EdgeOptions()
     options.use_chromium = True
     options.add_argument (f"--user-agent={UserAgent().random}")
@@ -63,12 +63,11 @@ def main():
         wb = Workbook()
         wb.worksheets[0].title = sheet_name
         wb.save(stock_highest_salemon_file)
-    writer = pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl", if_sheet_exists='replace')
-    df = df[df["營收月份"] == f"{datetime.now().year%100}M{datetime.now().month-1:02d}"] # only save month-1 data
-    if df:
-        df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
-        excel_formatting(writer, df, sheet_name)
-        writer.save()
+    with pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl", if_sheet_exists='replace') as writer:
+        df = df[df["營收月份"] == f"{datetime.now().year%100}M{datetime.now().month-1:02d}"] # only save month-1 data
+        if df:
+            df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
+            excel_formatting(writer, df, sheet_name)
     
     """ drop down menu """
     stock_crawler_file = global_vars.DIR_PATH + "stock_crawler.xlsx"
@@ -83,21 +82,20 @@ def main():
     url_list.append("https://goodinfo.tw/StockInfo/StockList.asp?RPT_TIME=&MARKET_CAT=%E7%86%B1%E9%96%80%E6%8E%92%E8%A1%8C&INDUSTRY_CAT=%E7%8F%BE%E9%87%91%E6%AE%96%E5%88%A9%E7%8E%87+%28%E6%9C%80%E6%96%B0%E5%B9%B4%E5%BA%A6%29%40%40%E7%8F%BE%E9%87%91%E6%AE%96%E5%88%A9%E7%8E%87%40%40%E6%9C%80%E6%96%B0%E5%B9%B4%E5%BA%A6")
     url_list.append("https://goodinfo.tw/StockInfo/StockList.asp?RPT_TIME=&MARKET_CAT=%E6%99%BA%E6%85%A7%E9%81%B8%E8%82%A1&INDUSTRY_CAT=%E6%9C%88K%E7%B7%9A%E7%AA%81%E7%A0%B4%E5%AD%A3%E7%B7%9A%40%40%E6%9C%88K%E7%B7%9A%E5%90%91%E4%B8%8A%E7%AA%81%E7%A0%B4%E5%9D%87%E5%83%B9%E7%B7%9A%40%40%E5%AD%A3%E7%B7%9A")
     
-    writer = pd.ExcelWriter(stock_crawler_file, mode="w", engine="xlsxwriter")
-    dropdown_ID = "selRANK"    # 下拉式選單ID
-    table_ID = "#divStockList" # 表格ID
-    for i in range(len(sheet_name_list)):
-        driver.get(url_list[i])
-        try:
-            driver.find_element_by_id(dropdown_ID) # to test whether the dropdown_ID is in the website or not
-            df = stock_crawler_dropdown(driver, dropdown_ID, table_ID)
-        except NoSuchElementException:
-            df = stock_crawler(None, driver.page_source, table_ID)
-        delete_header(df, list(df.columns))
-        # df.drop_diplicates(inplace=True)
-        df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name_list[i], freeze_panes=(1,2))
-        excel_formatting(writer, df, sheet_name_list[i])
-    writer.save()
+    with pd.ExcelWriter(stock_crawler_file, mode="w", engine="xlsxwriter") as writer:
+        dropdown_ID = "selRANK"    # 下拉式選單ID
+        table_ID = "#divStockList" # 表格ID
+        for i in range(len(sheet_name_list)):
+            driver.get(url_list[i])
+            try:
+                driver.find_element_by_id(dropdown_ID) # to test whether the dropdown_ID is in the website or not
+                df = stock_crawler_dropdown(driver, dropdown_ID, table_ID)
+            except NoSuchElementException:
+                df = stock_crawler(None, driver.page_source, table_ID)
+            delete_header(df, list(df.columns))
+            # df.drop_diplicates(inplace=True)
+            df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name_list[i], freeze_panes=(1,2))
+            excel_formatting(writer, df, sheet_name_list[i])
     
     
 # delete duplicate header in data

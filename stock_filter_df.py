@@ -87,34 +87,33 @@ def main():
         df = df[["代號", columns[i]]]
         df_combine = pd.merge(df_combine, df, on=["代號"], how="left")
 
-    writer = pd.ExcelWriter(global_vars.DIR_PATH + "stock_filter.xlsx", engine="xlsxwriter")
-    df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="All", freeze_panes=(1,2))
-    excel_formatting(writer, df_combine, "All")
-    
-    input_menu() # user menu
-    # filters
-    df_combine = df_combine[df_combine["單月營收歷月排名"] == "1高"]
-    df_combine = df_combine[df_combine["負債總額(%)"] <= DEBT_RATIO]
-    df_combine = df_combine[(df_combine["全體董監持股(%)"]+df_combine["本國法人(%)"]) >= STAKEHOLDING]
-    df_combine = df_combine[df_combine["全體董監質押(%)"] <= PLEDGE_RATIO]
-    df_combine = df_combine[df_combine["毛利率歷季排名"] <= GROSS_MARGIN]
-    df_combine = df_combine[df_combine["營益率歷季排名"] <= OPERATING_MARGIN]
-    df_combine = df_combine[df_combine["淨利率歷季排名"] <= NET_PROFIT_MARGIN]
-    df_combine = df_combine[df_combine["現金殖利率"] >= DIVIDEND_YIELD]
-    df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="Filtered", freeze_panes=(1,2))
-    excel_formatting(writer, df_combine, "Filtered")
-    
-    # info of filtered stocks in different sheets
-    stocks_ID = ','.join(df_combine["代號"].values)
-    if not stocks_ID:
-        sys.exit("無符合篩選條件的股票, 請重新調整參數")
-    stock_dict = stock_ID_name_mapping()
-    print("The size of filtered  stocks:", len(stocks_ID.split(',')))
-    print("filtered stocks:")
-    for stock_ID in stocks_ID.split(','):
-        print(f"{stock_dict[stock_ID]}({stock_ID})")
-    stock_info(stocks_ID, writer)
-    writer.save()
+    with pd.ExcelWriter(global_vars.DIR_PATH + "stock_filter.xlsx", engine="xlsxwriter") as writer:
+        df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="All", freeze_panes=(1,2))
+        excel_formatting(writer, df_combine, "All")
+        
+        input_menu() # user menu
+        # filters
+        df_combine = df_combine[df_combine["單月營收歷月排名"] == "1高"]
+        df_combine = df_combine[df_combine["負債總額(%)"] <= DEBT_RATIO]
+        df_combine = df_combine[(df_combine["全體董監持股(%)"]+df_combine["本國法人(%)"]) >= STAKEHOLDING]
+        df_combine = df_combine[df_combine["全體董監質押(%)"] <= PLEDGE_RATIO]
+        df_combine = df_combine[df_combine["毛利率歷季排名"] <= GROSS_MARGIN]
+        df_combine = df_combine[df_combine["營益率歷季排名"] <= OPERATING_MARGIN]
+        df_combine = df_combine[df_combine["淨利率歷季排名"] <= NET_PROFIT_MARGIN]
+        df_combine = df_combine[df_combine["現金殖利率"] >= DIVIDEND_YIELD]
+        df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="Filtered", freeze_panes=(1,2))
+        excel_formatting(writer, df_combine, "Filtered")
+        
+        # info of filtered stocks in different sheets
+        stocks_ID = ','.join(df_combine["代號"].values)
+        if not stocks_ID:
+            sys.exit("無符合篩選條件的股票, 請重新調整參數")
+        stock_dict = stock_ID_name_mapping()
+        print("The size of filtered  stocks:", len(stocks_ID.split(',')))
+        print("filtered stocks:")
+        for stock_ID in stocks_ID.split(','):
+            print(f"{stock_dict[stock_ID]}({stock_ID})")
+        stock_info(stocks_ID, writer)
  
 
 # the info of monthly revenue and consollidated financial statements
