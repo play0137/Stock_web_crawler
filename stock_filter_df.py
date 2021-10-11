@@ -107,15 +107,15 @@ def main():
     # info of filtered stocks in different sheets
     stocks_ID = ','.join(df_combine["代號"].values)
     if not stocks_ID:
-        sys.exit("無符合篩選條件的股票")
+        sys.exit("無符合篩選條件的股票, 請重新調整參數")
     stock_dict = stock_ID_name_mapping()
+    print("The size of filtered  stocks:", len(stocks_ID.split(',')))
     print("filtered stocks:")
     for stock_ID in stocks_ID.split(','):
         print(f"{stock_dict[stock_ID]}({stock_ID})")
-    print("The size of filtered  stocks:", len(stocks_ID.split(',')))
     stock_info(stocks_ID, writer)
     writer.save()
-
+ 
 
 # the info of monthly revenue and consollidated financial statements
 def stock_info(stocks_ID, writer):

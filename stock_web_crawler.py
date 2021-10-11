@@ -113,7 +113,7 @@ def convert_dtype(df):
         if not np.isnan(pd.to_numeric(df[name], errors='coerce')).any(): # coerce:invalid parsing will be set as NaN
             df[name] = df[name].astype(float)
 
-def stock_crawler(url, page_source, table_ID):
+def stock_crawler(url, page_source, table_ID, table_number=0):
     while True:
         if page_source:
             soup = BeautifulSoup(page_source, "lxml")
@@ -122,12 +122,12 @@ def stock_crawler(url, page_source, table_ID):
             fake_ua = UserAgent()
             header = {'User-Agent': fake_ua.random}
             # header = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"}
-        
+            
             # request
             if not global_vars.proxy_list:
-                response = requests.post(url, headers=header, proxies=global_vars.proxy)
-            else:
                 response = requests.post(url, headers=header)
+            else:
+                response = requests.post(url, headers=header, proxies=global_vars.proxy)
             if response.status_code != requests.codes.ok: # status_code:200
                 sys.stderr.write("Request failed!\n")
                 sys.stderr.write("Status code:" + str(response.status_code) + '\n')
@@ -144,8 +144,12 @@ def stock_crawler(url, page_source, table_ID):
     soup.encoding = "UTF-8"
     try:
         div = soup.select_one(table_ID)
-        df = pd.read_html(str(div))[0]
+        if table_number == -1:
+            df = pd.read_html(str(div))
+        else:
+            df = pd.read_html(str(div))[table_number]
     except:
+        pdb.set_trace()
         sys.exit("empty div")
         
     return df
