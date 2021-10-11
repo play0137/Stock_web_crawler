@@ -203,6 +203,5 @@ def menu():
           "8.目前參數值", 
           "9.繼續", sep="\n")
  
-
 if __name__ == "__main__":
     main()

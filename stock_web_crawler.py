@@ -147,7 +147,6 @@ def stock_crawler(url, page_source, table_ID, table_number=0):
         else:
             df = pd.read_html(str(div))[table_number]
     except:
-        pdb.set_trace()
         sys.exit("empty div")
         
     return df
