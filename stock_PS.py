@@ -32,7 +32,6 @@ def main():
     element = driver.find_element_by_xpath('//*[@id="search_bar1"]/div/input[1]').click()
     element = driver.find_element_by_xpath('//*[@id="search_bar1"]/div/input[2]')
 
-    stock_dict = dict()
     year = int(input("輸入年份:"))
     file_path = global_vars.DIR_PATH + "stock_PS/" + f"stock_PS_{year}.xlsx"
     with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:

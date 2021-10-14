@@ -65,7 +65,7 @@ def main():
         wb.save(stock_highest_salemon_file)
     with pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl", if_sheet_exists='replace') as writer:
         df = df[df["營收月份"] == f"{datetime.now().year%100}M{datetime.now().month-1:02d}"] # only save month-1 data
-        if df:
+        if not df.empty:
             df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
             excel_formatting(writer, df, sheet_name)
     
@@ -142,6 +142,7 @@ def stock_crawler(url, page_source, table_ID, table_number=0):
     soup.encoding = "UTF-8"
     try:
         div = soup.select_one(table_ID)
+        # if no specific table number, pass -1 to this function
         if table_number == -1:
             df = pd.read_html(str(div))
         else:
