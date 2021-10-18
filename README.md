@@ -32,7 +32,7 @@ NET_PROFIT_MARGIN <= 20 # 稅後淨利率
 5. Optional  
 global_vars.py 已經有預設一些可使用的proxy了  
 執行get_free_proxies.py會從網站抓取可用的proxy並寫入proxies.txt  
-執行其他程式時會讀取proxies.txt的資料並使用，在proxy無法使用時替換成其他的proxy
+執行其他程式時會讀取proxies.txt的資料並使用，在proxy無法使用時替換成其他的proxy  
 當全部的proxy都不可用時，請重新執行一次get_free_proxies.py來更新proxy
 
 # 公司
