@@ -14,10 +14,10 @@ stock_filter.xlsx 的第一及第二個分頁(分頁名字:ALL及Filtered)顯示
 DEBT_RATIO < 40%        # 負債比  
 STAKEHOLDING > 30%      # 持股  
 PLEDGE_RATIO < 10%      # 質押比  
-DIVIDEND_YIELD > 1%     # 現金殖利率
-毛利率、營益率、稅後淨利率前20名
-GROSS_MARGIN <= 20      # 毛利率
-OPERATING_MARGIN <= 20  # 營益率
+DIVIDEND_YIELD > 1%     # 現金殖利率  
+毛利率、營益率、稅後淨利率前20名  
+GROSS_MARGIN <= 20      # 毛利率  
+OPERATING_MARGIN <= 20  # 營益率  
 NET_PROFIT_MARGIN <= 20 # 稅後淨利率  
 
 3. 執行 stock_info.py 得到股票的基本資訊
