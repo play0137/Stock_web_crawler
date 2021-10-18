@@ -45,12 +45,12 @@ from stock_info import stock_ID_name_mapping
 DEBT_RATIO = 40         # 負債比
 STAKEHOLDING = 30       # 持股
 PLEDGE_RATIO = 10       # 質押比
-# DEBT_RATIO = 100         # 負債比
-# STAKEHOLDING = 0       # 持股
-# PLEDGE_RATIO = 100       # 質押比
-GROSS_MARGIN = 20        # 毛利率
-OPERATING_MARGIN = 20    # 營益率
-NET_PROFIT_MARGIN = 20   # 稅後淨利率
+# DEBT_RATIO = 100        # 負債比
+# STAKEHOLDING = 0        # 持股
+# PLEDGE_RATIO = 100      # 質押比
+GROSS_MARGIN = 20       # 毛利率
+OPERATING_MARGIN = 20   # 營益率
+NET_PROFIT_MARGIN = 20  # 稅後淨利率
 DIVIDEND_YIELD = 1      # 現金殖利率
 # DIVIDEND_YIELD = 0      # 現金殖利率
 
