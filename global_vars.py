@@ -1,9 +1,10 @@
 """ global variables are declared here """
 import os
+import sys
 import json
 import random
 
-DIR_PATH = "C:/Users/play0/OneDrive/桌面/stock/test/" # modify the directory path to the one that your files are located in
+DIR_PATH = "C:/Users/play0/OneDrive/桌面/stock/" # modify the directory path to the one that your files are located in
 def initialize_proxy():
     global proxy, proxy_list
     
@@ -23,8 +24,12 @@ def initialize_proxy():
 # choose a proxy from proxy_list randomly, and remove it
 def update_proxy():
     global proxy
-    proxy = random.choice(proxy_list)
-    proxy_list.remove(proxy)
+    
+    if proxy_list:
+        proxy = random.choice(proxy_list)
+        proxy_list.remove(proxy)
+    else:
+        sys.err.write("Please update proxies\n")
     
 def main():
     pass
