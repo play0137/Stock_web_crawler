@@ -64,6 +64,9 @@ def main():
     
     file_path = global_vars.DIR_PATH + "月營收創新高.xlsx"
     try:
+        last_month = datetime.now().month-1
+        if last_month <= 0:
+            last_month = 12
         df = pd.read_excel(file_path, sheet_name=f"{datetime.now().month-1}月")
     except ValueError as ve:
         print("ValueError:", ve)
