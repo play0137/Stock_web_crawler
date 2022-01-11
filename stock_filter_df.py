@@ -112,6 +112,13 @@ def main():
         for stock_ID in stocks_ID.split(','):
             print(f"{stock_dict[stock_ID]}({stock_ID})")
         stock_info(stocks_ID, writer)
+    
+    # write filter results to another file that contain history data
+    file_path = global_vars.DIR_PATH + "stock_filter_history.xlsx"
+    sheet_name = f"{last_month}月"
+    with pd.ExcelWriter(file_path, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
+        df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
+        excel_formatting(writer, df_combine, sheet_name)
  
 
 # the info of monthly revenue and consollidated financial statements
