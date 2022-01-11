@@ -180,7 +180,7 @@ def input_menu():
             print(f"負債比 < {DEBT_RATIO}%",
                   f"董監+法人持股 > {STAKEHOLDING}%",
                   f"董監質押比 < {PLEDGE_RATIO}%",
-                  f"現金殖利率 > {DIVIDEND_YIELD}%"
+                  f"現金殖利率 > {DIVIDEND_YIELD}%\n", sep='\n')
                 #   f"毛利率 前{GROSS_MARGIN}名",
                 #   f"營益率 前{OPERATING_MARGIN}名",
                 #   f"稅後淨利率 前{NET_PROFIT_MARGIN}名\n", sep='\n')
