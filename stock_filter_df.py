@@ -40,19 +40,14 @@ import global_vars
 from stock_web_crawler import stock_crawler, delete_header, excel_formatting
 from stock_info import stock_ID_name_mapping
 
-
 # global variables
 DEBT_RATIO = 40         # 負債比
 STAKEHOLDING = 30       # 持股
 PLEDGE_RATIO = 10       # 質押比
-# DEBT_RATIO = 100        # 負債比
-# STAKEHOLDING = 0        # 持股
-# PLEDGE_RATIO = 100      # 質押比
 GROSS_MARGIN = 20       # 毛利率
 OPERATING_MARGIN = 20   # 營益率
 NET_PROFIT_MARGIN = 20  # 稅後淨利率
 DIVIDEND_YIELD = 1      # 現金殖利率
-# DIVIDEND_YIELD = 0      # 現金殖利率
 
 def main():
     file_path = global_vars.DIR_PATH + "公司股市代號對照表.csv"
@@ -100,9 +95,9 @@ def main():
         df_combine = df_combine[df_combine["負債總額(%)"] <= DEBT_RATIO]
         df_combine = df_combine[(df_combine["全體董監持股(%)"]+df_combine["本國法人(%)"]) >= STAKEHOLDING]
         df_combine = df_combine[df_combine["全體董監質押(%)"] <= PLEDGE_RATIO]
-        df_combine = df_combine[df_combine["毛利率歷季排名"] <= GROSS_MARGIN]
-        df_combine = df_combine[df_combine["營益率歷季排名"] <= OPERATING_MARGIN]
-        df_combine = df_combine[df_combine["淨利率歷季排名"] <= NET_PROFIT_MARGIN]
+        # df_combine = df_combine[df_combine["毛利率歷季排名"] <= GROSS_MARGIN]
+        # df_combine = df_combine[df_combine["營益率歷季排名"] <= OPERATING_MARGIN]
+        # df_combine = df_combine[df_combine["淨利率歷季排名"] <= NET_PROFIT_MARGIN]
         df_combine = df_combine[df_combine["現金殖利率"] >= DIVIDEND_YIELD]
         df_combine.to_excel(writer, index=False, encoding="UTF-8", sheet_name="Filtered", freeze_panes=(1,2))
         excel_formatting(writer, df_combine, "Filtered")
@@ -156,7 +151,7 @@ def stock_info(stocks_ID, writer):
 def input_menu():
     global DEBT_RATIO, STAKEHOLDING, PLEDGE_RATIO, GROSS_MARGIN, OPERATING_MARGIN, NET_PROFIT_MARGIN, DIVIDEND_YIELD
 
-    menu()
+    input_menu()
     while True:
         input_num = input()
         if input_num == "0":
@@ -167,12 +162,12 @@ def input_menu():
             PLEDGE_RATIO = int(input())
         elif input_num == "3":
             DIVIDEND_YIELD = int(input())
-        elif input_num == "4":
-            GROSS_MARGIN = int(input())
-        elif input_num == "5":
-            OPERATING_MARGIN = int(input())
-        elif input_num == "6":
-            NET_PROFIT_MARGIN = int(input())
+        # elif input_num == "4":
+            # GROSS_MARGIN = int(input())
+        # elif input_num == "5":
+            # OPERATING_MARGIN = int(input())
+        # elif input_num == "6":
+            # NET_PROFIT_MARGIN = int(input())
         elif input_num == "7":
             DEBT_RATIO = 40
             STAKEHOLDING = 30
@@ -185,10 +180,10 @@ def input_menu():
             print(f"負債比 < {DEBT_RATIO}%",
                   f"董監+法人持股 > {STAKEHOLDING}%",
                   f"董監質押比 < {PLEDGE_RATIO}%",
-                  f"現金殖利率 > {DIVIDEND_YIELD}%",
-                  f"毛利率 前{GROSS_MARGIN}名",
-                  f"營益率 前{OPERATING_MARGIN}名",
-                  f"稅後淨利率 前{NET_PROFIT_MARGIN}名\n", sep='\n')
+                  f"現金殖利率 > {DIVIDEND_YIELD}%"
+                #   f"毛利率 前{GROSS_MARGIN}名",
+                #   f"營益率 前{OPERATING_MARGIN}名",
+                #   f"稅後淨利率 前{NET_PROFIT_MARGIN}名\n", sep='\n')
         elif input_num == "9":
             break
         menu()
@@ -199,9 +194,9 @@ def menu():
           f"1.董監+法人持股(> {STAKEHOLDING}%)",
           f"2.董監質押比(< {PLEDGE_RATIO}%)",
           f"3.現金殖利率(> {DIVIDEND_YIELD}%)",
-          f"4.毛利率前{GROSS_MARGIN}名",
-          f"5.營益率前{OPERATING_MARGIN}名",
-          f"6.稅後淨利率前{NET_PROFIT_MARGIN}名",
+        #   f"4.毛利率前{GROSS_MARGIN}名",
+        #   f"5.營益率前{OPERATING_MARGIN}名",
+        #   f"6.稅後淨利率前{NET_PROFIT_MARGIN}名",
           "7.預設",
           "8.目前參數值", 
           "9.繼續", sep="\n")
