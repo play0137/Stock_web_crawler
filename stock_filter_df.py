@@ -151,7 +151,7 @@ def stock_info(stocks_ID, writer):
 def input_menu():
     global DEBT_RATIO, STAKEHOLDING, PLEDGE_RATIO, GROSS_MARGIN, OPERATING_MARGIN, NET_PROFIT_MARGIN, DIVIDEND_YIELD
 
-    input_menu()
+    menu()
     while True:
         input_num = input()
         if input_num == "0":
