@@ -58,13 +58,18 @@ def main():
     delete_header(df, list(df.columns))
     convert_dtype(df) # convert numeric values in string to float
     
-    sheet_name = f"{datetime.now().month-1}月"         # write to different months
+    year = datetime.now().year
+    last_month = datetime.now().month-1
+    if last_month <= 0:
+        last_month = 12
+        year -= 1
+    sheet_name = f"{last_month}月"         # write to different months
     if not os.path.isfile(stock_highest_salemon_file): # create an excel file if not exist
         wb = Workbook()
         wb.worksheets[0].title = sheet_name
         wb.save(stock_highest_salemon_file)
     with pd.ExcelWriter(stock_highest_salemon_file, mode="a", engine="openpyxl", if_sheet_exists='replace') as writer:
-        df = df[df["營收月份"] == f"{datetime.now().year%100}M{datetime.now().month-1:02d}"] # only save month-1 data
+        df = df[df["營收月份"] == f"{year%100}M{last_month:02d}"] # only save month-1 data
         if not df.empty:
             df.to_excel(writer, index=False, encoding="UTF-8", sheet_name=sheet_name, freeze_panes=(1,2))
             excel_formatting(writer, df, sheet_name)
