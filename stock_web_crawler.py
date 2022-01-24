@@ -63,7 +63,7 @@ def main():
     if last_month <= 0:
         last_month = 12
         year -= 1
-    sheet_name = f"{last_month}月"         # write to different months
+    sheet_name = f"{last_month}月" # write to different months
     if not os.path.isfile(stock_highest_salemon_file): # create an excel file if not exist
         wb = Workbook()
         wb.worksheets[0].title = sheet_name
