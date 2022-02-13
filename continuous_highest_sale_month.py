@@ -6,9 +6,7 @@ import pandas as pd
 import global_vars
 import pdb
 
-# file_path = global_vars.DIR_PATH + "stock_filter_history.xlsx"
-file_path = global_vars.DIR_PATH + "月營收創新高_backup.xlsx"
-
+file_path = global_vars.DIR_PATH + "月營收創新高.xlsx"
 dfs = pd.read_excel(file_path, sheet_name=None) # 設sheet_name為None會讀進excel的所有活頁簿
 stocks_list = list() # 記錄所有創新高股票的名稱
 for sheet_name in dfs:
