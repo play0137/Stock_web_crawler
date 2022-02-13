@@ -7,12 +7,12 @@ import pandas as pd
 from datetime import datetime
 import global_vars
 
-stockNo = 2331 # 輸入股號
+stockNo = 2891 # 輸入股號
 
 current_year = datetime.now().year
 current_month = datetime.now().month
 while True:
-    user_input = input("請輸入起訖年月份:").split()  
+    user_input = input("請輸入起訖年月份(e.g., 202001 202005):").split()  
     if len(user_input[0]) == 5:
         split_len = 3
     elif len(user_input[0]) == 6:
