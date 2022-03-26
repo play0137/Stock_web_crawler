@@ -26,10 +26,7 @@ NET_PROFIT_MARGIN <= 20 # 稅後淨利率
 例如: "2330" 或 "2330 2331" 或 "台積電, 聯電" 或 "2330 聯電"  
 輸出檔案為 "stock_info.xlsx"  
 
-4. 執行 stock_PS.py 得到公司的自結損益 (Preliminary Earnings)  
-輸入年份後，會抓取一整年份的資料
-
-5. Optional  
+4. Optional  
 global_vars.py 預設一些可使用的 proxy  
 執行 get_free_proxies.py 會從網站抓取可用的 proxy 並寫入 proxies.txt  
 執行其他程式時會讀取 proxies.txt 的資料並使用，在 proxy 無法使用時替換成其他的 proxy  
