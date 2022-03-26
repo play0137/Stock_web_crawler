@@ -35,6 +35,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import Workbook
 
+# self-defined
 import global_vars
 
 def main():
