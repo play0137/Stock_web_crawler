@@ -37,3 +37,15 @@ global_vars.py 已經有預設一些可使用的proxy了
 
 # 公司
 公司股市代號對照表.csv: 包含所有在台灣上市的公司股號、簡稱、全名對照表
+
+# Prerequisites
+A Microsoft Edge browser  
+
+## Required packages
+* beautifulsiup4  
+* fake_useragent  
+* numpy  
+* msedge-selenium-tools  
+* openpyxl  
+* pandas  
+* selenium  
