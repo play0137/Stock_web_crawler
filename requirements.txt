@@ -1,0 +1,7 @@
+beautifulsiup4
+fake_useragent
+numpy
+msedge-selenium-tools
+openpyxl
+pandas
+selenium
