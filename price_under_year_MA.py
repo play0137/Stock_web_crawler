@@ -7,6 +7,7 @@ AND
 OR
 成交價位於年均線區間
 """
+
 import pandas as pd
 import global_vars
 

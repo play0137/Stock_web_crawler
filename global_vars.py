@@ -1,4 +1,5 @@
-""" global variables are declared here """
+""" global variables declarations """
+
 import os
 import sys
 import json
