@@ -1,4 +1,8 @@
-""" Get free proxies from proxy website, and write them to file """
+"""
+Get free proxies from proxy website, and write them to stock/proxies.txt
+It will take few minutes to execute
+"""
+
 from bs4 import BeautifulSoup
 import requests
 import json

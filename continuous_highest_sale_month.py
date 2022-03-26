@@ -1,10 +1,12 @@
-""" 改變連續n個月被篩選出來的股票名稱的樣式 """
+""" 改變連續 n 個月被篩選出來的股票名稱的樣式 """
+
 from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
 from datetime import datetime
 import pandas as pd
-import global_vars
 import pdb
+
+import global_vars
 
 file_path = global_vars.DIR_PATH + "月營收創新高.xlsx"
 dfs = pd.read_excel(file_path, sheet_name=None) # 設sheet_name為None會讀進excel的所有活頁簿

@@ -1,6 +1,5 @@
-"""
-自結損益(Preliminary Earnings)
-"""
+""" 自結損益 (Preliminary Earnings) """
+
 import time
 import random
 from datetime import datetime
@@ -34,13 +33,14 @@ def main():
 
     year = int(input("輸入年份:"))
     file_path = global_vars.DIR_PATH + "stock_PS/" + f"stock_PS_{year}.xlsx"
+    if year > 1911:
+        year -= 1911
+    if year == datetime.now().year - 1911:
+        months = datetime.now().month
+    else:
+        months = 13
+        
     with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
-        if year > 1911:
-            year -= 1911
-        if year == datetime.now().year - 1911:
-            months = datetime.now().month
-        else:
-            months = 13
         for month in range(1, months):
             date = f"{year}{month:02}"
             print(date)
