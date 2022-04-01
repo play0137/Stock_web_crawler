@@ -27,10 +27,11 @@ NET_PROFIT_MARGIN <= 20 # 稅後淨利率
 輸出檔案為 "stock_info.xlsx"  
 
 4. Optional  
-global_vars.py 有預設一些可使用的 proxy  
-執行 get_free_proxies.py 會從網站抓取可用的 proxy 並寫入 proxies.txt  
-執行其他程式時會讀取 proxies.txt 的資料並使用，在預設的 proxy 無法使用時替換成其他的 proxy  
-當全部的 proxy 都不可用時，請重新執行一次 get_free_proxies.py 來更新 proxy
+- 執行 continuous_highest_sale_month.py 會標記出過去N個月連續M個月，月營收創新高的股票顏色
+- global_vars.py 有預設一些可使用的 proxy  
+  執行 get_free_proxies.py 會從網站抓取可用的 proxy 並寫入 proxies.txt  
+  執行其他程式時會讀取 proxies.txt 的資料並使用，在預設的 proxy 無法使用時替換成其他的 proxy  
+  當全部的 proxy 都不可用時，請重新執行一次 get_free_proxies.py 來更新 proxy
 
 # 需求 (Prerequisites)
 ### 瀏覽器 (Browser)
