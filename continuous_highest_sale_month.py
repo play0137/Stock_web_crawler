@@ -17,11 +17,18 @@ for sheet_name in dfs:
 
 workbook_size = len(dfs)
 while True:
-    past_months, continuous_months = input("請輸入過去幾個月裡連續幾個月創新高:\n").split(",")
+    past_months, continuous_months = input("請輸入過去 N 個月裡連續 M 個月創新高:(N及M以,分隔)\n").split(",")
     past_months = int(past_months)
     continuous_months = int(continuous_months)
-    if past_months > workbook_size or continuous_months > past_months or past_months < 0 or continuous_months < 0:
-        print("請重新輸入")
+    # if past_months > workbook_size or continuous_months > past_months or past_months < 0 or continuous_months < 0:
+    if past_months <= 0 or continuous_months <= 0:
+        print("請輸入正整數")
+        continue
+    elif past_months > workbook_size:
+        print(f"資料僅有過去{workbook_size}個月的資料，無法抓取過去{past_months}個月")
+        continue
+    elif continuous_months > past_months:
+        print("連續 M 個月不能大於過去連續 N 個月")
         continue
     break
 
