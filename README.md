@@ -1,8 +1,8 @@
-# Stock_web_crawler
+# Overview
 從 Goodinfo! 股票網站抓取資料並根據不同的參數來篩選股票  
 可調整的參數包含 負債比、董監及法人持股、質押比、現金殖利率、毛利率、營益率、稅後淨利率
 
-# 如何執行  
+# How to run
 1. 執行 stock_web_crawler.py 來爬取 Goodinfo! 的資料  
 輸出檔案為 "月營收創新高.xlsx" 和 "stock_crawler.xlsx"  
 月營收創新高.xlsx: 抓取上一個月月營收創新高股票的相關資訊    
