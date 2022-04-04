@@ -28,9 +28,11 @@ import pandas as pd
 import numpy as np
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.common.exceptions import NoSuchElementException
-from msedge.selenium_tools import Edge, EdgeOptions
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import Workbook
@@ -42,13 +44,14 @@ def main():
     global_vars.initialize_proxy()
     
     # webdriver settings
-    options = EdgeOptions()
+    options = webdriver.EdgeOptions()
     options.use_chromium = True
     options.add_argument (f"--user-agent={UserAgent().random}")
     options.add_argument("--incognito")           # incognito mode  
     options.add_argument("headless")              # executing selenium without running the browser
     options.add_argument("disable-notifications") # disable notifications
-    driver = Edge(global_vars.DIR_PATH + "edgedriver_win64/msedgedriver.exe", options=options)
+    service = EdgeService(executable_path = global_vars.DIR_PATH + "edgedriver_win64/msedgedriver.exe")
+    driver = webdriver.Edge(service=service, options=options)
     driver.implicitly_wait(random.randint(1,4))
     
     """ 月營收創新高 """
@@ -94,7 +97,7 @@ def main():
         for i in range(len(sheet_name_list)):
             driver.get(url_list[i])
             try:
-                driver.find_element_by_id(dropdown_ID) # to test whether the dropdown_ID is in the website or not
+                driver.find_element(By.ID, dropdown_ID) # to test whether the dropdown_ID is in the website or not
                 df = stock_crawler_dropdown(driver, dropdown_ID, table_ID)
             except NoSuchElementException:
                 df = stock_crawler(None, driver.page_source, table_ID)
@@ -159,7 +162,7 @@ def stock_crawler(url, page_source, table_ID, table_number=0):
     return df
 
 def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
-    element = driver.find_element_by_id(dropdown_ID)
+    element = driver.find_element(By.ID, dropdown_ID)
     options_num = len(element.text.split('\n'))
     for i in range(options_num):
         try:
@@ -167,7 +170,7 @@ def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
             select.click()
         except:
             # refetch if the element is no longer attached to the DOM
-            element = driver.find_element_by_id(dropdown_ID) # 1~300, 301~600, 601~900, 901~1200, 1201~1500, 1500~1734
+            element = driver.find_element(By.ID, dropdown_ID) # 1~300, 301~600, 601~900, 901~1200, 1201~1500, 1500~1734
             select = Select(element).options[i]
             select.click()
         time.sleep(random.randint(2,5))
