@@ -1,11 +1,13 @@
 """ global variables declarations """
-
+import pathlib
+from pathlib import Path
 import os
 import sys
 import json
 import random
 
-DIR_PATH = "stock/" # modify the directory path to the one that your files are located in
+previous_folder = Path(__file__).parents[1]
+DIR_PATH = str(previous_folder) + "/stock/" # modify the directory path to the one that your files are located in
 def initialize_proxy():
     global proxy, proxy_list
     
