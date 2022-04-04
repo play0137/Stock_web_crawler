@@ -1,2 +1,2 @@
-__pycache__
+*.pyc
 stock_web_crawler_webdriver.py
