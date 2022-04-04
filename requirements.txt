@@ -4,4 +4,4 @@ numpy==1.21.2
 msedge-selenium-tools==3.141.4
 openpyxl==3.0.9
 pandas==1.4.1
-selenium==3.141.0
+selenium==4.1.0
