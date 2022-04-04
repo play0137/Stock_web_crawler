@@ -1,4 +1,4 @@
-BeautifulSoup4  
+beautifulsoup4  
 fake_useragent
 numpy
 msedge-selenium-tools
