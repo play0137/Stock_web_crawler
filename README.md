@@ -1,10 +1,10 @@
 [English version](https://github.com/play0137/Stock_web_crawler/blob/master/README_EN.md)
 
-# Overview
+# 介紹
 從 Goodinfo! 股票網站抓取資料並根據不同的參數來篩選股票  
 可調整的參數包含 負債比、董監及法人持股、質押比、現金殖利率、毛利率、營益率、稅後淨利率
 
-# Usage
+# 如何執行
 1. 執行 *stock_web_crawler.py* 來爬取 Goodinfo! 的資料  
 輸出檔案為 *月營收創新高.xlsx* 和 *stock_crawler.xlsx*  
 *月營收創新高.xlsx*: 抓取上一個月月營收創新高股票的相關資訊    
@@ -35,7 +35,7 @@ NET_PROFIT_MARGIN <= 20 # 稅後淨利率
   執行其他程式時會讀取 *proxies.txt* 的資料並使用，在預設的 proxy 無法使用時替換成其他的 proxy  
   當全部的 proxy 都不可用時，請重新執行一次 *get_free_proxies.py* 來更新 proxy
 
-# 需求 (Prerequisites)
+# 需求
 ### 瀏覽器
 Microsoft Edge 瀏覽器  
 
