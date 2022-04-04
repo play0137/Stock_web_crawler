@@ -43,7 +43,6 @@ Microsoft Edge 瀏覽器
 * [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
 * [fake_useragent](https://pypi.org/project/fake-useragent/)
 * [numpy](https://pypi.org/project/numpy/)
-* [msedge-selenium-tools](https://pypi.org/project/msedge-selenium-tools/)
 * [openpyxl](https://pypi.org/project/openpyxl/)
 * [pandas](https://pypi.org/project/pandas/)
 * [selenium](https://pypi.org/project/selenium/)
