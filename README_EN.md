@@ -1,3 +1,4 @@
+[中文版](https://github.com/play0137/Stock_web_crawler/blob/master/README.md)  
 # Overview
 Crawl the information from Goodinfo! stock website, and filter the data according to different arguments  
 The arguments are adjustable, including debt_ratio, stakeholding, pledge_ratio and dividend_yield  
