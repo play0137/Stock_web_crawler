@@ -32,7 +32,7 @@ def update_proxy():
         proxy = random.choice(proxy_list)
         proxy_list.remove(proxy)
     else:
-        sys.err.write("Please update proxies\n")
+        sys.stderr.write("Please update proxies\n")
     
 def main():
     pass
