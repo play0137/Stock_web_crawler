@@ -12,6 +12,8 @@ GoodInfo -> 每月營收 -> 輸入某個 股票代號/名稱 -> 抓取過去各�
 4.
 GoodInfo -> 每月營收 -> 輸入某個 股票代號/名稱 -> 經營績效 -> 合併報表-單季 -> 抓下面的table -> 放在stock_info excel檔下方
 https://goodinfo.tw/StockInfo/StockBzPerformance.asp?STOCK_ID=2330&YEAR_PERIOD=9999&RPT_CAT=M_QUAR
+
+require selenium: 4.1.0
 """
 
 # standard libraries
@@ -30,7 +32,9 @@ from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.common.exceptions import NoSuchElementException
 from openpyxl.utils import get_column_letter
@@ -162,19 +166,22 @@ def stock_crawler(url, page_source, table_ID, table_number=0):
     return df
 
 def stock_crawler_dropdown(driver, dropdown_ID, table_ID):
-    element = driver.find_element(By.ID, dropdown_ID)
+    wait = WebDriverWait(driver, random.randint(40, 60))
+    element = wait.until(EC.presence_of_all_elements_located((By.ID, dropdown_ID)))[0] # 1~300, 301~600, 601~900, 901~1200, 1201~1500, 1500~1734
     options_num = len(element.text.split('\n'))
     for i in range(options_num):
         try:
-            select = Select(element).options[i]
-            select.click()
+            Select(element).options[i].click()
         except:
             # refetch if the element is no longer attached to the DOM
-            element = driver.find_element(By.ID, dropdown_ID) # 1~300, 301~600, 601~900, 901~1200, 1201~1500, 1500~1734
-            select = Select(element).options[i]
-            select.click()
-        time.sleep(random.randint(2,5))
+            element = wait.until(EC.presence_of_all_elements_located((By.ID, dropdown_ID)))[0]
+            Select(element).options[i].click()
+        # print(Select(element).options[i].text) # print dropdown text
+        wait.until(EC.invisibility_of_element_located((By.ID, "StockListDataLoading"))) # 等到(資料載入中...)消失，才代表更新到下一個table了
+        wait.until(EC.visibility_of_element_located((By.ID, table_ID.lstrip('#')))) # 操作逾時可以等到table出現為止
+        
         df = stock_crawler(None, driver.page_source, table_ID)
+        # print(df) # print df to check
         if i == 0:
             df_concat = df
         else:
